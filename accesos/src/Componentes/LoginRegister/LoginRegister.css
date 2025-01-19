@@ -1,0 +1,153 @@
+/* Contenedor principal del formulario */
+.wrapper {
+    position: relative;
+    width: 100%; /* Cambiar a un tamaño relativo para ser más flexible */
+    max-width: 420px; /* Limitar el tamaño máximo */
+    height: auto; /* Ajustar la altura al contenido */
+    background: none;
+    border-radius: 10px;
+    border: none;
+    box-shadow: none;
+    padding: 20px;
+    overflow: hidden;
+    margin: 0 auto; /* Centrado automático */
+}
+
+/* Cuando está activa (cuando se cambia entre Login y Register) */
+.wrapper.active {
+    height: auto;
+}
+
+/* Caja del formulario (Login y Register) */
+.wrapper .form-box {
+    width: 100%;
+    padding: 40px;
+    background: none;
+    border-radius: 10px;
+    position: absolute;
+    transition: all 0.3s ease;
+    color: #fff;
+}
+
+/* Estilo para el formulario Login */
+.form-box.login {
+    top: 0;
+}
+
+/* Estilo para el formulario Register */
+.form-box.register {
+    top: 0;
+    left: 100%;
+    transition: all 0.3s ease;
+}
+
+/* Cuando el formulario de registro debe ser visible */
+.wrapper.active .form-box.register {
+    left: 0;
+}
+
+/* Animación de texto */
+form h1 {
+    font-size: 28px; /* Tamaño más pequeño */
+    text-align: center;
+    color: #fff;
+    margin-bottom: 20px; /* Espaciado inferior */
+}
+
+/* Estilo para los Inputs */
+.input-box input {
+    width: 100%;
+    height: 50px;
+    background: transparent;
+    border: 2px solid #fff;
+    border-radius: 8px;
+    outline: none;
+    font-size: 16px;
+    color: #fff;
+    padding: 20px 45px 20px 20px;
+    transition: all 0.3s ease;
+}
+
+/* Placeholder con color blanco */
+.input-box input::placeholder {
+    color: #fff;
+}
+
+/* Efecto cuando el input está en foco */
+.input-box input:focus {
+    border-color: #0c6a17;
+    box-shadow: 0 0 8px rgba(12, 106, 23, 0.7);
+}
+
+/* Iconos dentro de los inputs */
+.input-box .icon {
+    position: absolute;
+    right: 20px;
+    top: 50%;
+    transform: translate(0, -50%);
+    font-size: 16px;
+    color: #fff;
+}
+
+/* Estilo para recordar y link de "Olvidé mi contraseña" */
+form .remember-forgot {
+    display: flex;
+    justify-content: space-between;
+    font-size: 14.5px;
+    margin: -15px 0 15px;
+}
+
+.remember-forgot label input {
+    accent-color: #fff;
+    margin-right: 4px;
+}
+
+.remember-forgot a {
+    color: #fff;
+    text-decoration: none;
+}
+
+.remember-forgot a:hover {
+    text-decoration: underline;
+}
+
+/* Botón de submit */
+form button {
+    width: 100%;
+    height: 45px;
+    background: transparent;
+    border: none;
+    outline: none;
+    border-radius: 40px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, .1);
+    cursor: pointer;
+    font-size: 16px;
+    color: #fff;
+    font-weight: 700;
+}
+
+/* Media Queries para dispositivos pequeños (móviles) */
+@media screen and (max-width: 768px) {
+    .wrapper {
+        padding: 15px; /* Reducir padding para móviles */
+        width: 90%; /* Asegurarse de que ocupe el 90% del ancho */
+        height: auto; /* Dejar que la altura dependa del contenido */
+    }
+
+    .form-box {
+        padding: 20px; /* Reducir padding dentro del formulario */
+    }
+
+    .input-box input {
+        font-size: 14px; /* Tamaño de fuente más pequeño */
+    }
+
+    form h1 {
+        font-size: 28px; /* Ajustar tamaño de título */
+    }
+
+    form button {
+        height: 40px; /* Reducir el tamaño del botón */
+        font-size: 14px; /* Ajustar tamaño de fuente del botón */
+    }
+}

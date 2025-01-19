@@ -1,0 +1,7 @@
+.form-control-lg {
+    font-size: 2.25rem; /* Aumenta el tamaño de la fuente */
+    padding: 1rem;      /* Aumenta el padding para hacer los campos más grandes */
+    height: 100px;       /* Asegura que el input sea lo suficientemente alto */
+    margin-right: 200px;
+  }
+  
