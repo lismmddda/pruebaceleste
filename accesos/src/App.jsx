@@ -8,10 +8,10 @@ import RegistrarUsuario from './Componentes/usuarios/registrar_usuario';
 import RegistrarRol from './Componentes/roles/index';  
 import RegistrarPago from './Componentes/Pagos';  
 import Registrarpago from './Componentes/Pagos/registrarpago';  
-import IndexPorton from './Componentes/Portones';  // Listado de portones
-import RegistrarPorton from './Componentes/Portones/registrar_porton';  // Registro de portón
-import IndexMultas from './Componentes/Multas';  // Importamos el componente de multas
-import RegistrarMulta from './Componentes/Multas/registrar'; // Ruta para registrar multa
+import IndexPorton from './Componentes/Portones';  
+import RegistrarPorton from './Componentes/Portones/registrar_porton';  
+import IndexMultas from './Componentes/Multas';  
+import RegistrarMulta from './Componentes/Multas/registrar'; 
 
 function App() {
   return (
