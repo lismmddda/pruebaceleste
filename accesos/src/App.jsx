@@ -11,7 +11,8 @@ import Registrarpago from './Componentes/Pagos/registrarpago';
 import IndexPorton from './Componentes/Portones';  
 import RegistrarPorton from './Componentes/Portones/registrar_porton';  
 import IndexMultas from './Componentes/Multas';  
-import RegistrarMulta from './Componentes/Multas/registrar'; 
+import RegistrarMulta from './Componentes/Multas/registrar';  
+import Notificaciones from './Componentes/Multas/Notificaciones';  // Asegúrate de importar Notificaciones
 
 function App() {
   return (
@@ -29,6 +30,7 @@ function App() {
         <Route path="/Portones/registrar" element={<RegistrarPorton />} />
         <Route path="/Multas" element={<IndexMultas />} />
         <Route path="/Multas/registrar" element={<RegistrarMulta />} />
+        <Route path="/notificaciones" element={<Notificaciones />} /> {/* Nueva ruta para Notificaciones */}
       </Routes>
     </Router>
   );

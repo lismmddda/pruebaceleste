@@ -28,7 +28,6 @@ db.connect((err) => {
 });
 
 // Ruta de inicio de sesión
-// Ruta de inicio de sesión
 app.post('/api/login', (req, res) => {
   const { telefono } = req.body;
 
@@ -51,6 +50,51 @@ app.post('/api/login', (req, res) => {
     }
   });
 });
+
+// Ruta para registrar una multa
+app.post('/api/registrarMulta', (req, res) => {
+  const { descripcion, fecha, departamento, monto } = req.body;
+
+  // Validar que todos los campos estén presentes
+  if (!descripcion || !fecha || !departamento || !monto) {
+    return res.status(400).json({ success: false, message: 'Todos los campos son requeridos' });
+  }
+
+  // Consulta SQL para insertar una nueva multa en la base de datos
+  const query = 'INSERT INTO multas (descripcion, fecha, departamento, monto) VALUES (?, ?, ?, ?)';
+  
+  db.query(query, [descripcion, fecha, departamento, monto], (err, result) => {
+    if (err) {
+      console.error('Error al registrar la multa:', err);
+      return res.status(500).json({ success: false, message: 'Error al registrar la multa' });
+    }
+    return res.status(200).json({ success: true, message: 'Multa registrada exitosamente' });
+  });
+});
+
+
+
+app.get('/api/countNotificaciones', (req, res) => {
+  db.query('SELECT COUNT(*) AS total FROM multas', (err, results) => {
+    if (err) {
+      return res.status(500).json({ success: false, message: 'Error al contar las notificaciones' });
+    }
+    const totalNotificaciones = results[0].total;
+    return res.status(200).json({ success: true, totalNotificaciones });
+  });
+});
+
+
+app.get('/api/notificaciones', (req, res) => {
+  db.query('SELECT * FROM multas', (err, results) => {
+    if (err) {
+      return res.status(500).json({ success: false, message: 'Error al obtener las notificaciones' });
+    }
+    return res.status(200).json({ success: true, notificaciones: results });
+  });
+});
+
+
 
 // Iniciar el servidor
 app.listen(port, () => {
