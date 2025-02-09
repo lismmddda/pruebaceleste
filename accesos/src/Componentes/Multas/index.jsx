@@ -64,12 +64,12 @@ function Index() {
           <div className="card-header">
             <h3 className="card-title">Administrar Multas</h3>
             
-            {/* Botón de notificaciones con contador */}
+            {/* Botón de notificaciones sin número */}
             <button 
-              className={`btn ${newNotificationsCount > 0 ? 'btn-danger' : 'btn-secondary'} float-right mr-2`}
+              className="btn btn-secondary float-right mr-2"
               onClick={handleNotificacionesClick}
             >
-              Notificaciones ({newNotificationsCount}) {/* Muestra el total de notificaciones */}
+              Notificaciones
             </button>
 
             <Link to="/Multas/registrar" className="btn btn-success float-right">
@@ -102,7 +102,7 @@ function Index() {
                 {/* Muestra las multas */}
                 {notificaciones.map((notif) => (
                   <tr key={notif.id}>
-                    <td>{notif.motivo}</td>
+                    <td>{notif.descripcion}</td>
                     <td>{notif.monto}</td>
                     <td>{notif.fecha}</td>
                     <td>{notif.estado}</td>
@@ -116,20 +116,7 @@ function Index() {
             </table>
 
             {/* Aquí irían las notificaciones si es necesario mostrarlas */}
-            <div className="mt-3">
-              <h5>Notificaciones:</h5>
-              {notificaciones.length > 0 ? (
-                <ul className="list-group">
-                  {notificaciones.map((notif) => (
-                    <li key={notif.id} className="list-group-item">
-                      {notif.descripcion} <span className="badge badge-info">{notif.estado}</span>
-                    </li>
-                  ))}
-                </ul>
-              ) : (
-                <p>No hay notificaciones</p>
-              )}
-            </div>
+        
           </div>
         </div>
       </section>

@@ -51,7 +51,6 @@ app.post('/api/login', (req, res) => {
   });
 });
 
-// Ruta para registrar una multa
 app.post('/api/registrarMulta', (req, res) => {
   const { descripcion, fecha, departamento, monto } = req.body;
 
@@ -71,6 +70,7 @@ app.post('/api/registrarMulta', (req, res) => {
     return res.status(200).json({ success: true, message: 'Multa registrada exitosamente' });
   });
 });
+
 
 
 

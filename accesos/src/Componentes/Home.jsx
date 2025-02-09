@@ -2,6 +2,9 @@ import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import '../../public/plugins/fontawesome-free/css/all.min.css'; // FontAwesome
 import '../../public/dist/css/adminlte.min.css'; // AdminLTE
+import "../Componentes/Multas/Notificaciones.css"
+import { FaEllipsisV } from "react-icons/fa"; // Importamos el icono
+import "./Multas/Notificaciones.css"
 
 function Home() {
   const [rol, setRol] = useState(''); // Estado para el rol
@@ -17,6 +20,11 @@ function Home() {
   const [isMenuOpen, setIsMenuOpen] = useState(false); // Estado para el menú lateral
 
   const navigate = useNavigate(); // Usar useNavigate para redirigir
+  const [notificaciones, setNotificaciones] = useState([]); // Estado para almacenar las notificaciones
+  const [newNotificationsCount, setNewNotificationsCount] = useState(0); // Contador de notificaciones
+  const [loading, setLoading] = useState(true);
+  const [modalVisible, setModalVisible] = useState(false);
+  const [selectedNotification, setSelectedNotification] = useState(null);
 
   // Función para manejar el toggle del menú lateral
   const toggleMenu = () => {
@@ -29,6 +37,9 @@ function Home() {
   const toggleMultasMenu = () => setIsMultasOpen(!isMultasOpen);
   const togglePermisosMenu = () => setIsPermisosOpen(!isPermisosOpen);
 
+
+
+
   useEffect(() => {
     // Obtener los datos almacenados en localStorage
     const storedName = localStorage.getItem('nombre');
@@ -40,6 +51,41 @@ function Home() {
     setRol(storedRol || 'Usuario'); // Ajustar esto dependiendo de la lógica de roles
   }, []); // Esto solo se ejecuta al montar el componente.
 
+ // Función para cargar las notificaciones desde el backend
+  useEffect(() => {
+    // Llamada para obtener el número total de notificaciones
+    fetch('http://localhost:5000/api/countNotificaciones')
+      .then(response => response.json())
+      .then(data => {
+        if (data.success) {
+          setNewNotificationsCount(data.totalNotificaciones); // Establece el contador de notificaciones
+        }
+      })
+      .catch(err => {
+        console.error('Error al obtener las notificaciones', err);
+      });
+
+    // Llamada para obtener todas las notificaciones (si es necesario mostrarlas)
+    fetch('http://localhost:5000/api/notificaciones')
+      .then(response => response.json())
+      .then(data => {
+        if (data.success) {
+          setNotificaciones(data.notificaciones);  // Asignamos las notificaciones a su estado
+        }
+        setLoading(false); // Una vez que la carga de datos ha terminado
+      })
+      .catch(err => {
+        console.error('Error al obtener las notificaciones', err);
+        setLoading(false); // En caso de error también finaliza la carga
+      });
+  }, []); // Solo se ejecuta al montar el componente
+
+  // Función para redirigir al usuario a la vista de notificaciones
+  const handleNotificacionesClick = () => {
+    navigate('/Notificaciones');
+  };
+
+
   // Función para cerrar sesión
   const handleLogout = () => {
     // Limpiar el estado y redirigir a login
@@ -47,10 +93,44 @@ function Home() {
     navigate('/login'); // Usar navigate en lugar de history.push
   };
 
+    // Función para obtener las notificaciones desde la API
+    const fetchNotifications = () => {
+      fetch("http://localhost:5000/api/notificaciones")
+        .then((response) => response.json())
+        .then((data) => {
+          if (data.success) {
+            setNotificaciones(data.notificaciones);
+          }
+          setLoading(false);
+        })
+        .catch((err) => {
+          console.error("Error al obtener las notificaciones", err);
+          setLoading(false);
+        });
+    };
+  
+    useEffect(() => {
+      // Consulta inicial
+      fetchNotifications();
+  
+      // Configuramos el intervalo para que se actualice cada 5 segundos (5000 milisegundos)
+      const intervalId = setInterval(fetchNotifications, 1000);
+  
+      // Limpiamos el intervalo cuando el componente se desmonte
+      return () => clearInterval(intervalId);
+    }, []);
+
   return (
     <div className="hold-transition sidebar-mini">
       <center><h2>Bienvenido, {name} ({rol}) - ID: {user_id}</h2></center>
-
+     {/* Botón de notificaciones sin número */}
+     <button 
+              className="btn btn-secondary float-right mr-2"
+              onClick={handleNotificacionesClick}
+            >
+              Notificaciones
+              <span className="notification-counter">{notificaciones.length}</span>
+            </button>
       <div className="wrapper">
         <nav className="main-header navbar navbar-expand navbar-white navbar-light">
           <ul className="navbar-nav">
@@ -62,7 +142,17 @@ function Home() {
           </ul>
         </nav>
       </div>
-
+      <section className='content-header'>
+        <h1>Listado</h1>
+      </section>
+      <section className='content'>
+        <div className='card'>
+          <div className='card-header'>
+            
+            <h3 className='card-title'>Administrar multas</h3>
+          </div>
+        </div>
+      </section>
       <aside className={`main-sidebar sidebar-dark-primary elevation-4 ${isMenuOpen ? 'sidebar-open' : 'sidebar-closed'}`}>
         <div className="sidebar">
           <div className="user-panel mt-3 pb-3 mb-3 d-flex">
