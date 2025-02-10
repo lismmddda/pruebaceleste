@@ -14,7 +14,7 @@ const LoginRegister = () => {
   const handleLogin = async (e) => {
     e.preventDefault();
   
-    // Convertir teléfono ingresado a minúsculas
+    // Convertir teléfono ingresado a minúsculas (si es necesario, dependiendo de tu base de datos)
     const telefonoIngresado = telefono.toLowerCase();
 
     // Validación de teléfono
@@ -36,7 +36,7 @@ const LoginRegister = () => {
         },
         body: JSON.stringify({ telefono: telefonoIngresado }),
       });
-      
+
       const data = await response.json();
   
       if (data.success) {

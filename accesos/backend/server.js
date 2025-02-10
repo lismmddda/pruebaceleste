@@ -1,5 +1,6 @@
 import express from 'express';
-import mysql from 'mysql2';
+import pkg from 'pg';  // Importar el paquete completo de 'pg'
+const { Pool } = pkg;  // Extraer 'Pool' del paquete
 import cors from 'cors';  // Habilitar CORS para permitir que el frontend interactúe con el backend
 
 const app = express();
@@ -9,36 +10,41 @@ const port = 5000;  // Puerto para el backend
 app.use(cors());
 app.use(express.json());
 
-// Configuración de la conexión a la base de datos
-const db = mysql.createConnection({
-  host: 'localhost',
-  user: 'root',
-  password: '',
-  database: 'gestion',
+// Configuración de la conexión a PostgreSQL
+const pool = new Pool({
+  user: 'postgres',  // El usuario de tu base de datos
+  host: 'localhost',  // El host donde está PostgreSQL (puede cambiar si usas un servicio en la nube)
+  database: 'gestion',  // El nombre de la base de datos
+  password: '1234',  // La contraseña del usuario
+  port: 5432,  // El puerto de PostgreSQL (el valor por defecto es 5432)
 });
 
-// Conectar a la base de datos
-db.connect((err) => {
-  if (err) {
-    console.error('Error al conectar con la base de datos:', err);
-    return;
-  } else {
-    console.log('Conexión exitosa a la base de datos');
-  }
-});
+// Verificar conexión a PostgreSQL
+pool.connect()
+  .then(() => {
+    console.log('Conexión a PostgreSQL establecida correctamente.');
+  })
+  .catch((err) => {
+    console.error('Error al conectar a PostgreSQL:', err);
+  });
 
-// Ruta de inicio de sesión
+// Función para manejar errores
+const handleDbError = (err, res) => {
+  console.error('Error al ejecutar la consulta:', err);
+  res.status(500).json({ success: false, message: 'Error en la base de datos' });
+};
+
 app.post('/api/login', (req, res) => {
   const { telefono } = req.body;
 
   // Consultar la base de datos para encontrar el usuario por su teléfono
-  db.query('SELECT * FROM usuarios WHERE telefono = ?', [telefono], (err, results) => {
+  pool.query('SELECT * FROM usuarios WHERE telefono = $1', [telefono], (err, results) => {
     if (err) {
       return res.status(500).json({ success: false, message: 'Error al consultar la base de datos' });
     }
 
-    if (results.length > 0) {
-      const usuario = results[0];
+    if (results.rows.length > 0) {
+      const usuario = results.rows[0];
       return res.status(200).json({
         success: true,
         user_id: usuario.id,
@@ -51,6 +57,7 @@ app.post('/api/login', (req, res) => {
   });
 });
 
+// Ruta para registrar una multa
 app.post('/api/registrarMulta', (req, res) => {
   const { descripcion, fecha, departamento, monto } = req.body;
 
@@ -60,41 +67,36 @@ app.post('/api/registrarMulta', (req, res) => {
   }
 
   // Consulta SQL para insertar una nueva multa en la base de datos
-  const query = 'INSERT INTO multas (descripcion, fecha, departamento, monto) VALUES (?, ?, ?, ?)';
+  const query = 'INSERT INTO multas (descripcion, fecha, departamento, monto) VALUES ($1, $2, $3, $4)';
   
-  db.query(query, [descripcion, fecha, departamento, monto], (err, result) => {
+  pool.query(query, [descripcion, fecha, departamento, monto], (err, result) => {
     if (err) {
-      console.error('Error al registrar la multa:', err);
-      return res.status(500).json({ success: false, message: 'Error al registrar la multa' });
+      return handleDbError(err, res);
     }
     return res.status(200).json({ success: true, message: 'Multa registrada exitosamente' });
   });
 });
 
-
-
-
+// Contar las notificaciones
 app.get('/api/countNotificaciones', (req, res) => {
-  db.query('SELECT COUNT(*) AS total FROM multas', (err, results) => {
+  pool.query('SELECT COUNT(*) AS total FROM multas', (err, results) => {
     if (err) {
-      return res.status(500).json({ success: false, message: 'Error al contar las notificaciones' });
+      return handleDbError(err, res);
     }
-    const totalNotificaciones = results[0].total;
+    const totalNotificaciones = results.rows[0].total;
     return res.status(200).json({ success: true, totalNotificaciones });
   });
 });
 
-
+// Obtener todas las notificaciones
 app.get('/api/notificaciones', (req, res) => {
-  db.query('SELECT * FROM multas', (err, results) => {
+  pool.query('SELECT * FROM multas', (err, results) => {
     if (err) {
-      return res.status(500).json({ success: false, message: 'Error al obtener las notificaciones' });
+      return handleDbError(err, res);
     }
-    return res.status(200).json({ success: true, notificaciones: results });
+    return res.status(200).json({ success: true, notificaciones: results.rows });
   });
 });
-
-
 
 // Iniciar el servidor
 app.listen(port, () => {
