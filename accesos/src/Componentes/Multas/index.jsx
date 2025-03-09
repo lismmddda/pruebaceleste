@@ -1,127 +1,88 @@
-import React, { useState, useEffect } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import React, { useEffect, useState } from 'react';
+import axios from 'axios';
+import { useNavigate } from 'react-router-dom';  // Importar useNavigate
 
-function Index() {
-  const navigate = useNavigate();
-  const [notificaciones, setNotificaciones] = useState([]); // Estado para almacenar las notificaciones
-  const [newNotificationsCount, setNewNotificationsCount] = useState(0); // Contador de notificaciones
-  const [loading, setLoading] = useState(true); // Estado de carga
+function Multas() {
+  const [multas, setMultas] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-  // Función para cargar las notificaciones desde el backend
+  const navigate = useNavigate();  // Inicializar el hook de navegación
+
   useEffect(() => {
-    // Llamada para obtener el número total de notificaciones
-    fetch('http://localhost:5000/api/countNotificaciones')
-      .then(response => response.json())
-      .then(data => {
-        if (data.success) {
-          setNewNotificationsCount(data.totalNotificaciones); // Establece el contador de notificaciones
+    // Hacer la solicitud GET al servidor para obtener las multas
+    axios.get('http://localhost:5000/api/multas', {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem('token')}`,  // Asegúrate de enviar el token en el header
+      }
+    })
+      .then(response => {
+        if (response.data.success) {
+          setMultas(response.data.multas);
+        } else {
+          console.error('Error al obtener las multas');
         }
       })
-      .catch(err => {
-        console.error('Error al obtener las notificaciones', err);
-      });
-
-    // Llamada para obtener todas las notificaciones (si es necesario mostrarlas)
-    fetch('http://localhost:5000/api/notificaciones')
-      .then(response => response.json())
-      .then(data => {
-        if (data.success) {
-          setNotificaciones(data.notificaciones);  // Asignamos las notificaciones a su estado
-        }
-        setLoading(false); // Una vez que la carga de datos ha terminado
+      .catch(error => {
+        console.error('Error en la solicitud:', error);
       })
-      .catch(err => {
-        console.error('Error al obtener las notificaciones', err);
-        setLoading(false); // En caso de error también finaliza la carga
+      .finally(() => {
+        setLoading(false);
       });
-  }, []); // Solo se ejecuta al montar el componente
+  }, []); // Esto solo se ejecuta una vez cuando el componente se monta
 
-  // Función para redirigir al usuario a la vista de notificaciones
-  const handleNotificacionesClick = () => {
-    navigate('/Notificaciones');
+  const handleAddMulta = () => {
+    // Redirigir a la página de registrar multa
+    navigate('/multas/registrar');
   };
 
+  // Función para manejar el clic en el botón de Cancelar
   const handleCancel = () => {
-    navigate('/Home');
+    navigate('/Home'); // Redirige a la página Home.jsx
   };
 
   if (loading) {
-    return (
-      <div className="loading-container">
-        <p>Cargando...</p>
-      </div>
-    );
+    return <p>Cargando multas...</p>;
   }
 
   return (
     <div className="content-wrapper">
       <section className="content-header">
-        <h1>Listado de Multas</h1>
+        <center><h1>Listado de Multas</h1></center>
+        <button onClick={handleAddMulta} className="btn btn-success">Agregar Multa</button>
       </section>
-
       <section className="content">
-        <div className="card">
-          <div className="card-header">
-            <h3 className="card-title">Administrar Multas</h3>
-            
-            {/* Botón de notificaciones sin número */}
-            <button 
-              className="btn btn-secondary float-right mr-2"
-              onClick={handleNotificacionesClick}
-            >
-              Notificaciones
-            </button>
-
-            <Link to="/Multas/registrar" className="btn btn-success float-right">
-              Agregar Nueva Multa
-            </Link>
-            <button 
-              type="button" 
-              className="btn btn-secondary float-right mr-2" 
-              onClick={handleCancel}
-            >
-              Cancelar
-            </button>
-          </div>
-
-          <div className="card-body">
-            <p>En esta sección se gestionan las multas.</p>
-
-            {/* Tabla de Multas */}
-            <table className="table table-bordered table-striped">
-              <thead>
-                <tr>
-                  <th>Motivo de Multa</th>
-                  <th>Monto de Multa</th>
-                  <th>Fecha de Multa</th>
-                  <th>Estado</th>
-                  <th>Acciones</th>
-                </tr>
-              </thead>
-              <tbody>
-                {/* Muestra las multas */}
-                {notificaciones.map((notif) => (
-                  <tr key={notif.id}>
-                    <td>{notif.descripcion}</td>
-                    <td>{notif.monto}</td>
-                    <td>{notif.fecha}</td>
-                    <td>{notif.estado}</td>
-                    <td>
-                      <button className="btn btn-primary btn-sm">Modificar</button>
-                      <button className="btn btn-danger btn-sm">Eliminar</button>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-
-            {/* Aquí irían las notificaciones si es necesario mostrarlas */}
-        
-          </div>
-        </div>
+        <table className="table table-bordered">
+          <thead>
+            <tr>
+              <th>Descripcion</th>
+              <th>Fecha</th>
+              <th>Departamento</th>
+              <th>Monto</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            {multas.map((multa, index) => (
+              <tr key={index}>
+                <td>{multa.descripcion}</td>
+                <td>{multa.fecha}</td>
+                <td>{multa.departamento}</td>
+                <td>{multa.monto}</td>
+                <td>
+                  <button className="btn btn-primary">Editar</button>
+                  <button className="btn btn-danger">Eliminar</button>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
       </section>
+      {/* Botón de Cancelar para redirigir a Home.jsx */}
+      <div className="content-footer">
+        <button onClick={handleCancel} className="btn btn-secondary">Cancelar</button>
+      </div>
     </div>
   );
 }
 
-export default Index;
+export default Multas;

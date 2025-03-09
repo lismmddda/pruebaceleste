@@ -13,7 +13,7 @@ function RegistrarMulta() {
   const [modalMessage, setModalMessage] = useState(''); // Mensaje del modal
 
   const navigate = useNavigate();
-
+  
   const handleSubmit = async (e) => {
     e.preventDefault();
   
@@ -26,12 +26,24 @@ function RegistrarMulta() {
     setError(null);
     setShowModal(true); // Mostrar el modal al iniciar el proceso
     setModalMessage('Procesando multa...'); // Mostrar "Procesando multa..." al inicio
-  
+
     try {
+      // Obtener el token del almacenamiento local (localStorage) o de donde sea que lo guardes
+      const token = localStorage.getItem('token');
+      
+      // Verifica si el token existe
+      if (!token) {
+        setError('No se encontró el token. Por favor, inicia sesión nuevamente.');
+        setModalMessage('Error: No se encontró el token.');
+        setTimeout(() => setShowModal(false), 3000); // Cerrar el modal después de 3 segundos
+        return;
+      }
+  
       const response = await fetch('http://localhost:5000/api/registrarMulta', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`, // Incluyendo el token en los encabezados
         },
         body: JSON.stringify({
           descripcion,
@@ -44,9 +56,10 @@ function RegistrarMulta() {
       const data = await response.json();
   
       if (data.success) {
-        // Primero cambiamos el mensaje a "Procesando"
-        setModalMessage('Procesando...');
-  
+        setTimeout(() => {
+          setModalMessage('Procesando...'); // Mensaje de procesamiento
+        }, 10000); // Retraso de 10 segundos antes de mostrar el mensaje de "Procesando..."
+        
         // Luego mostramos "Multa registrada exitosamente" después de un breve intervalo
         setTimeout(() => {
           setModalMessage('Multa registrada exitosamente'); // Cambiar a "Multa registrada exitosamente"
@@ -70,20 +83,6 @@ function RegistrarMulta() {
       setLoading(false);
     }
   };
-  
-  
-  // JSX del modal
-  {showModal && (
-    <div className="modal-overlay">
-      <div className="modal-content">
-        {modalMessage === 'Procesando multa...' && <div className="spinner"></div>} {/* Mostrar spinner solo durante el procesamiento */}
-        <p className={`modal-message ${modalMessage.includes("exitosamente") ? 'modal-message-success' : modalMessage.includes("Error") ? 'modal-message-error' : 'modal-message-processing'}`}>
-          {modalMessage}
-        </p>
-      </div>
-    </div>
-  )}
-  
   
   const handleCancel = () => {
     navigate('/Multas');

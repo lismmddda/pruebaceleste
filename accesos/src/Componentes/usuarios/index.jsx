@@ -1,39 +1,66 @@
 import React, { useEffect, useState } from 'react';
-import axios from 'axios';
-import { useNavigate } from 'react-router-dom';  // Importar useNavigate
+import { useNavigate } from 'react-router-dom';
 
 function Usuarios() {
   const [usuarios, setUsuarios] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [showPassword, setShowPassword] = useState(false); // Estado para alternar la visibilidad de la contraseña
+  const navigate = useNavigate();
 
-  const navigate = useNavigate();  // Inicializar el hook de navegación
+  // Fetch usuarios desde el backend
+  const fetchUsuarios = async () => {
+    const token = localStorage.getItem('token');
+    try {
+      const response = await fetch('http://localhost:5000/api/usuarios', {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error('No autorizado');
+      }
+
+      const data = await response.json();
+      setUsuarios(data.usuarios);
+    } catch (error) {
+      console.error('Error al obtener los usuarios:', error);
+      setError('Hubo un error al obtener los usuarios. Intenta nuevamente.');
+    }
+  };
 
   useEffect(() => {
-    // Hacer la solicitud GET al servidor para obtener los usuarios
-    axios.get('http://localhost:5000/api/usuarios')
-      .then(response => {
-        if (response.data.success) {
-          setUsuarios(response.data.usuarios);
-        } else {
-          console.error('Error al obtener los usuarios');
-        }
-      })
-      .catch(error => {
-        console.error('Error en la solicitud:', error);
-      })
-      .finally(() => {
-        setLoading(false);
-      });
-  }, []); // Esto solo se ejecuta una vez cuando el componente se monta
+    fetchUsuarios();
+    setLoading(false);
+  }, []);
 
+  // Función para agregar un usuario
   const handleAddUser = () => {
-    // Redirigir a la página de registrar usuario
     navigate('/usuarios/registrar');
   };
 
-  // Función para manejar el clic en el botón de Cancelar
+  // Función para editar un usuario
+  const handleEditUser = (id) => {
+    navigate(`/usuarios/modificar/${id}`);  // Redirigir a la URL de modificar con el ID del usuario
+  };
+
+  // Función para eliminar un usuario
+  const handleDeleteUser = (id) => {
+    console.log('Eliminando usuario con ID:', id);
+    // Aquí puedes agregar la lógica para eliminar el usuario.
+  };
+
+  // Función para alternar la visibilidad de la contraseña
+  const togglePasswordVisibility = () => {
+    setShowPassword((prev) => !prev);
+  };
+
+  // Función para manejar el clic en "Cancelar"
   const handleCancel = () => {
-    navigate('/Home'); // Redirige a la página Home.jsx
+    navigate('/home'); // Redirige al Home o la página que desees
   };
 
   if (loading) {
@@ -44,20 +71,23 @@ function Usuarios() {
     <div className="content-wrapper">
       <section className="content-header">
         <center><h1>Listado de Usuarios</h1></center>
-        <button onClick={handleAddUser} className="btn btn-success">Agregar Usuario</button>
+        <button onClick={handleAddUser} className="btn btn-success mb-3">Agregar Usuario</button>
+        {/* Botón de Cancelar */}
+        <button onClick={handleCancel} className="btn btn-secondary mb-3 ml-3">Cancelar</button>
       </section>
       <section className="content">
-        <table className="table table-bordered">
+        {error && <div className="alert alert-danger">{error}</div>}
+        <table className="table table-striped table-bordered">
           <thead>
-            <tr>
-              <th>Nombre</th>
-              <th>Apellido Paterno</th>
-              <th>Apellido Materno</th>
-              <th>Correo electrónico</th>
-              <th>Teléfono</th>
-              <th>Confirmación Teléfono</th>
-              <th>Rol</th>
-              <th>Acciones</th>
+            <tr>   
+              <th className="text-center">Nombre</th>
+              <th className="text-center">Apellido Paterno</th>
+              <th className="text-center">Apellido Materno</th>
+              <th className="text-center">Correo electrónico</th>
+              <th className="text-center">Teléfono</th>
+              <th className="text-center">Rol</th>
+              <th className="text-center">Contraseña</th>
+              <th className="text-center">Acciones</th>
             </tr>
           </thead>
           <tbody>
@@ -68,21 +98,21 @@ function Usuarios() {
                 <td>{usuario.apm}</td>
                 <td>{usuario.email}</td>
                 <td>{usuario.telefono}</td>
-                <td>{usuario.confirma_telefono ? 'Sí' : 'No'}</td>
                 <td>{usuario.rol}</td>
-                <td>
-                  <button className="btn btn-primary">Editar</button>
-                  <button className="btn btn-danger">Eliminar</button>
+                <td>{usuario.password}</td>
+                <td className="text-center">
+                  <button onClick={() => handleEditUser(usuario.id)} className="btn btn-primary btn-sm">
+                    Editar
+                  </button>
+                  <button onClick={() => handleDeleteUser(usuario.id)} className="btn btn-danger btn-sm ml-2">
+                    Eliminar
+                  </button>
                 </td>
               </tr>
             ))}
           </tbody>
         </table>
       </section>
-      {/* Botón de Cancelar para redirigir a Home.jsx */}
-      <div className="content-footer">
-        <button onClick={handleCancel} className="btn btn-secondary">Cancelar</button>
-      </div>
     </div>
   );
 }

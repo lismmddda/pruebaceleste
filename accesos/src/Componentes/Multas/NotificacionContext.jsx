@@ -17,7 +17,19 @@ export const NotificationProvider = ({ children }) => {
   useEffect(() => {
     // Polling para actualizar las notificaciones cada cierto tiempo
     const intervalId = setInterval(() => {
-      fetch('http://localhost:5000/api/countNotificaciones')
+      const token = localStorage.getItem('token'); // Obtengo el token almacenado en localStorage
+
+      if (!token) {
+        console.error('No token found!');
+        return;
+      }
+
+      fetch('http://localhost:5000/api/countNotificaciones', {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${token}`, // Enviar el token en el encabezado
+        },
+      })
         .then((response) => response.json())
         .then((data) => {
           if (data.success) {

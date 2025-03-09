@@ -1,71 +1,110 @@
 /* Modal de Carga */
 .modal-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.5); /* Fondo oscuro */
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 9999; /* Asegúrate de que el modal esté por encima del contenido */
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+ 
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999; /* Asegúrate de que el modal esté por encima del contenido */
+}
+
+
+.modal-content {
+  background: rgb(241, 117, 117);
+  padding: 20px;
+  border-radius: 5px;
+  text-align: center;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  width: 300px; /* Tamaño del modal */
+  max-width: 90%; /* Para que no se salga del borde en pantallas pequeñas */
+  opacity: 0; /* Inicialmente oculto */
+  animation: fadeIn 7s forwards; /* La animación de aparición tiene una duración de 1 segundo */
+  animation-delay: 1s; /* Retraso de 5 segundos antes de que comience la animación */
+}
+.spinner {
+  border: 4px solid rgba(0, 0, 0, 0.1);
+  border-top: 4px solid #007bff;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  animation: spin 1s linear infinite;
+  margin: 0 auto 20px; /* Centrado y espacio debajo */
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.modal-message {
+  font-size: 20px;
+  color: #333;
+  opacity: 6; /* Inicialmente el mensaje está oculto */
+  animation: fadeIn 3s forwards; /* Animación de desvanecimiento */
+  animation-delay: 10s; /* Retraso de 1 segundo antes de que comience la animación */
+}
+@keyframes fadeIn {
+  0% {
+    opacity: 0;
   }
-  
-  .modal-content {
-    background: white;
-    padding: 20px;
-    border-radius: 5px;
-    text-align: center;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    width: 300px; /* Tamaño del modal */
-    max-width: 90%; /* Para que no se salga del borde en pantallas pequeñas */
+  100% {
+    opacity: 1;
   }
-  
-  .spinner {
-    border: 4px solid rgba(0, 0, 0, 0.1);
-    border-top: 4px solid #007bff;
-    border-radius: 50%;
-    width: 40px;
-    height: 40px;
-    animation: spin 1s linear infinite;
-    margin: 0 auto 20px; /* Centrado y espacio debajo */
+}
+
+.modal-message-success {
+  color: #28a745; /* Color verde para éxito */
+}
+
+.modal-message-error {
+  color: #dc3545; /* Color rojo para error */
+}
+
+.modal-message-processing {
+  color: #ffc107; /* Color amarillo para el procesamiento */
+}
+/* Modal de Carga */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5); /* Fondo oscuro */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+}
+
+.modal-content {
+  background: rgb(241, 117, 117);
+  padding: 20px;
+  border-radius: 5px;
+  text-align: center;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  width: 300px;
+  max-width: 90%;
+  opacity: 0;
+  animation: fadeIn 4s forwards;
+  animation-delay: 0s;
+}
+
+.modal-content-success {
+  background: rgb(78, 191, 78); /* Fondo verde para el mensaje de éxito */
+}
+
+@keyframes fadeIn {
+  0% {
+    opacity: 0;
+    transform: translateY(-20px);
   }
-  
-  @keyframes spin {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
   }
-  
-  .modal-message {
-    font-size: 16px;
-    color: #333;
-    font-weight: bold;
-    margin-top: 10px;
-    opacity: 0; /* Empezamos con opacidad 0 */
-    animation: fadeIn 1s forwards; /* Aplicamos la animación de desvanecimiento */
-    animation-delay: 5s; /* Retraso de 5 segundos */
-  }
-  
-  @keyframes fadeIn {
-    0% {
-      opacity: 0;
-    }
-    100% {
-      opacity: 1;
-    }
-  }
-  
-  /* Estilo para el mensaje de éxito */
-  .modal-message-success {
-    color: #28a745; /* Color verde para éxito */
-  }
-  
-  .modal-message-error {
-    color: #dc3545; /* Color rojo para error */
-  }
-  
-  .modal-message-processing {
-    color: #ffc107; /* Color amarillo para el procesamiento */
-  }
-  
+}

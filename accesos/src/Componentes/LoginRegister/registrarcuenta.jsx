@@ -12,16 +12,17 @@ function RegistrarCuenta() {
   const [apellidoPaterno, setApellidoPaterno] = useState('');
   const [apellidoMaterno, setApellidoMaterno] = useState('');
   const [correo, setCorreo] = useState('');
-  const [telefono, setTelefono] = useState(''); 
+  const [telefono, setTelefono] = useState('');
 
   const handleSubmit = (e) => {
     e.preventDefault();
     console.log("Formulario enviado", { nombreCarpeta, apellidoPaterno, apellidoMaterno, correo, telefono });
+    // Aquí podrías agregar la lógica para enviar la información al servidor o a donde sea necesario.
   };
 
   // Función para manejar el clic en el botón de Cancelar
   const handleCancel = () => {
-    navigate('../loginregister'); // Redirige a la página de LoginRegister desde el directorio anterior
+    navigate('/'); // Redirige a la página de LoginRegister desde el directorio anterior
   };
 
   return (
